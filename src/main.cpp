@@ -28,6 +28,10 @@
 
 int main(int argc, char **argv)
 {
+    QApplication::setApplicationName("EZLyric");
+    QApplication::setOrganizationName("Nathan Osman");
+    QApplication::setOrganizationDomain("com.nathanosman");
+
     QApplication app(argc, argv);
 
     MainWindow mainWindow;
