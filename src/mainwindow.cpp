@@ -27,9 +27,13 @@
 #include <QHBoxLayout>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QSettings>
 #include <QVBoxLayout>
 
 #include "mainwindow.h"
+
+const QString SettingGeometry("geometry");
+const QString SettingWindowState("windowState");
 
 const QString LargeButtonStylesheet("QPushButton{padding: 16px 0;}");
 const QString LargeLabelStylesheet("QLabel{font-size: 12pt; font-weight: bold;}");
@@ -96,7 +100,11 @@ MainWindow::MainWindow(QWidget *parent)
     widget->setLayout(vboxLayout);
     setCentralWidget(widget);
 
-    resize(400, 600);
+    // Load the previous window state
+    QSettings settings;
+    restoreGeometry(settings.value(SettingGeometry).toByteArray());
+    restoreState(settings.value(SettingWindowState).toByteArray());
+
     setWindowIcon(QIcon(":/logo.png"));
     setWindowTitle(tr("EZLyric"));
 }
@@ -158,6 +166,14 @@ void MainWindow::onNextLineClicked()
 
     outputLine(mFileContent->currentItem()->text());
     mFileContent->setCurrentRow(row + 1);
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    QSettings settings;
+    settings.setValue(SettingGeometry, saveGeometry());
+    settings.setValue(SettingWindowState, saveState());
+    QMainWindow::closeEvent(event);
 }
 
 void MainWindow::outputLine(const QString &line)

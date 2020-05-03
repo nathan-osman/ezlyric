@@ -47,6 +47,10 @@ private slots:
     void onClearLineClicked();
     void onNextLineClicked();
 
+protected:
+
+    virtual void closeEvent(QCloseEvent *event);
+
 private:
 
     void outputLine(const QString &line);
