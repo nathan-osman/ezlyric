@@ -24,14 +24,15 @@
 
 #include <QFile>
 #include <QFileDialog>
+#include <QFileInfo>
 #include <QHBoxLayout>
 #include <QInputDialog>
 #include <QMessageBox>
-#include <QSettings>
 #include <QVBoxLayout>
 
 #include "mainwindow.h"
 
+const QString SettingDirectory("directory");
 const QString SettingGeometry("geometry");
 const QString SettingWindowState("windowState");
 
@@ -40,6 +41,7 @@ const QString LargeLabelStylesheet("QLabel{font-size: 12pt; font-weight: bold;}"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
+      mSettings(new QSettings(this)),
       mFileContent(nullptr),
       mOutputFile(new QLabel(tr("[empty]"))),
       mShowText(nullptr),
@@ -101,9 +103,8 @@ MainWindow::MainWindow(QWidget *parent)
     setCentralWidget(widget);
 
     // Load the previous window state
-    QSettings settings;
-    restoreGeometry(settings.value(SettingGeometry).toByteArray());
-    restoreState(settings.value(SettingWindowState).toByteArray());
+    restoreGeometry(mSettings->value(SettingGeometry).toByteArray());
+    restoreState(mSettings->value(SettingWindowState).toByteArray());
 
     setWindowIcon(QIcon(":/logo.png"));
     setWindowTitle(tr("EZLyric"));
@@ -111,8 +112,13 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::onLoadFileClicked()
 {
-    auto filename = QFileDialog::getOpenFileName(this, tr("Load File"));
+    auto filename = QFileDialog::getOpenFileName(
+        this,
+        tr("Load File"),
+        mSettings->value(SettingDirectory).toString()
+    );
     if (!filename.isNull()) {
+        setDirectory(filename);
         QFile file(filename);
         if (file.open(QIODevice::ReadOnly)) {
             mFileContent->clear();
@@ -130,8 +136,13 @@ void MainWindow::onLoadFileClicked()
 
 void MainWindow::onSetOutputClicked()
 {
-    auto filename = QFileDialog::getSaveFileName(this, tr("Set Output File"));
+    auto filename = QFileDialog::getSaveFileName(
+        this,
+        tr("Set Output File"),
+        mSettings->value(SettingDirectory).toString()
+    );
     if (!filename.isNull()) {
+        setDirectory(filename);
         mOutputFile->setText(filename);
         mOutputFileName = filename;
         mShowText->setEnabled(true);
@@ -170,9 +181,8 @@ void MainWindow::onNextLineClicked()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    QSettings settings;
-    settings.setValue(SettingGeometry, saveGeometry());
-    settings.setValue(SettingWindowState, saveState());
+    mSettings->setValue(SettingGeometry, saveGeometry());
+    mSettings->setValue(SettingWindowState, saveState());
     QMainWindow::closeEvent(event);
 }
 
@@ -185,4 +195,9 @@ void MainWindow::outputLine(const QString &line)
     } else {
         QMessageBox::critical(this, tr("Error"), file.errorString());
     }
+}
+
+void MainWindow::setDirectory(const QString &filename)
+{
+    mSettings->setValue(SettingDirectory, QFileInfo(filename).absolutePath());
 }

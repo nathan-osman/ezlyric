@@ -29,6 +29,7 @@
 #include <QMainWindow>
 #include <QListWidget>
 #include <QPushButton>
+#include <QSettings>
 #include <QWidget>
 
 class MainWindow : public QMainWindow
@@ -53,7 +54,10 @@ protected:
 
 private:
 
+    void setDirectory(const QString &filename);
     void outputLine(const QString &line);
+
+    QSettings *mSettings;
 
     QListWidget *mFileContent;
 
