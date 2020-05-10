@@ -46,7 +46,7 @@ private slots:
     void onSetOutputClicked();
     void onShowTextClicked();
     void onClearLineClicked();
-    void onNextLineClicked();
+    void onShowLineClicked();
 
 protected:
 
@@ -66,7 +66,7 @@ private:
 
     QPushButton *mShowText;
     QPushButton *mClearLine;
-    QPushButton *mNextLine;
+    QPushButton *mShowLine;
 };
 
 #endif // MAINWINDOW_H

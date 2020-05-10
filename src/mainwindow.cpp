@@ -46,7 +46,7 @@ MainWindow::MainWindow(QWidget *parent)
       mOutputFile(new QLabel(tr("[empty]"))),
       mShowText(nullptr),
       mClearLine(nullptr),
-      mNextLine(nullptr)
+      mShowLine(nullptr)
 {
     mFileContent = new QListWidget();
 
@@ -73,15 +73,15 @@ MainWindow::MainWindow(QWidget *parent)
     mClearLine->setStyleSheet(LargeButtonStylesheet);
     connect(mClearLine, &QPushButton::clicked, this, &MainWindow::onClearLineClicked);
 
-    mNextLine = new QPushButton(tr("Next"));
-    mNextLine->setEnabled(false);
-    mNextLine->setStyleSheet(LargeButtonStylesheet);
-    connect(mNextLine, &QPushButton::clicked, this, &MainWindow::onNextLineClicked);
+    mShowLine = new QPushButton(tr("Show"));
+    mShowLine->setEnabled(false);
+    mShowLine->setStyleSheet(LargeButtonStylesheet);
+    connect(mShowLine, &QPushButton::clicked, this, &MainWindow::onShowLineClicked);
 
     auto actionLayout = new QHBoxLayout();
     actionLayout->addWidget(mShowText);
     actionLayout->addWidget(mClearLine);
-    actionLayout->addWidget(mNextLine);
+    actionLayout->addWidget(mShowLine);
 
     auto contentLabel = new QLabel(tr("Lyric Content"));
     contentLabel->setStyleSheet(LargeLabelStylesheet);
@@ -123,10 +123,7 @@ void MainWindow::onLoadFileClicked()
         if (file.open(QIODevice::ReadOnly)) {
             mFileContent->clear();
             foreach(auto line, QString::fromUtf8(file.readAll()).split("\n")) {
-                line = line.trimmed();
-                if (!line.isEmpty()) {
-                    mFileContent->addItem(line);
-                }
+                mFileContent->addItem(line);
             }
         } else {
             QMessageBox::critical(this, tr("Error"), file.errorString());
@@ -147,7 +144,7 @@ void MainWindow::onSetOutputClicked()
         mOutputFileName = filename;
         mShowText->setEnabled(true);
         mClearLine->setEnabled(true);
-        mNextLine->setEnabled(true);
+        mShowLine->setEnabled(true);
     }
 }
 
@@ -164,19 +161,27 @@ void MainWindow::onClearLineClicked()
     outputLine("");
 }
 
-void MainWindow::onNextLineClicked()
+void MainWindow::onShowLineClicked()
 {
-    int row = mFileContent->currentRow();
-    if (row == -1) {
-        if (mFileContent->count()) {
-            mFileContent->setCurrentRow(row = 0);
-        } else {
-            return;
+    // Quit if there is no selection
+    int line = mFileContent->currentRow();
+    if (line == -1) {
+        return;
+    }
+
+    // Output the selected line
+    outputLine(mFileContent->currentItem()->text());
+
+    // Advance to the next line that contains text
+    const int numLines = mFileContent->count();
+    for (++line; line < numLines; ++line) {
+        const QString &lineText = mFileContent->item(line)->text();
+        if (!lineText.trimmed().isEmpty() && !lineText.startsWith("-")) {
+            break;
         }
     }
 
-    outputLine(mFileContent->currentItem()->text());
-    mFileContent->setCurrentRow(row + 1);
+    mFileContent->setCurrentRow(line);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
