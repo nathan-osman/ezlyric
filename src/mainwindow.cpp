@@ -123,7 +123,7 @@ void MainWindow::onLoadFileClicked()
         if (file.open(QIODevice::ReadOnly)) {
             mFileContent->clear();
             foreach(auto line, QString::fromUtf8(file.readAll()).split("\n")) {
-                mFileContent->addItem(line);
+                mFileContent->addItem(line.trimmed());
             }
         } else {
             QMessageBox::critical(this, tr("Error"), file.errorString());
