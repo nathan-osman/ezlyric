@@ -5,6 +5,8 @@ set(SRC
     mainwindow.h
     mainwindow.cpp
     resource.qrc
+    song.h
+    song.cpp
 )
 
 if(WIN32)
