@@ -23,7 +23,6 @@
  */
 
 #include <QFile>
-#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonParseError>
@@ -63,11 +62,7 @@ bool Song::loadFromFile(const QString &filename)
 
     QJsonObject lyrics = object[KeyLyrics].toObject();
     for (QJsonObject::const_iterator i = lyrics.constBegin(); i != lyrics.constEnd(); ++i) {
-        QStringList lines;
-        foreach (const QJsonValue &line, i.value().toArray()) {
-            lines.append(line.toString());
-        }
-        mLyrics.insert(i.key(), lines);
+        mLyrics.insert(i.key(), i.value().toString());
     }
 
     return true;
@@ -76,12 +71,8 @@ bool Song::loadFromFile(const QString &filename)
 bool Song::saveToFile(const QString &filename)
 {
     QJsonObject lyrics;
-    for (LyricMap::const_iterator i = mLyrics.constBegin(); i != mLyrics.constEnd(); ++i) {
-        QJsonArray lines;
-        foreach (const QString &line, i.value()) {
-            lines.append(line);
-        }
-        lyrics[i.key()] = lines;
+    for (QStringMap::const_iterator i = mLyrics.constBegin(); i != mLyrics.constEnd(); ++i) {
+        lyrics[i.key()] = i.value();
     }
 
     QJsonObject object{

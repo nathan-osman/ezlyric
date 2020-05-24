@@ -22,51 +22,27 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef SONG_H
-#define SONG_H
+#ifndef SIZEHINTWIDGET_H
+#define SIZEHINTWIDGET_H
 
-#include <QMap>
-#include <QObject>
-
-typedef QMap<QString, QString> QStringMap;
+#include <QWidget>
 
 /**
- * @brief An individual song with lyrics.
+ * @brief The SizeHintWidget class
  */
-class Song : public QObject
+class SizeHintWidget : public QWidget
 {
     Q_OBJECT
-    Q_PROPERTY(int number READ number WRITE setNumber)
-    Q_PROPERTY(QString title READ title WRITE setTitle)
-    Q_PROPERTY(QString author READ author WRITE setAuthor)
-    Q_PROPERTY(QStringMap lyrics READ lyrics WRITE setLyrics)
 
 public:
 
-    explicit Song(QObject *parent = nullptr);
+    SizeHintWidget(int widthHint, int heightHint, QWidget *parent = nullptr);
 
-    int number() const { return mNumber; }
-    const QString &title() const { return mTitle; }
-    const QString &author() const { return mAuthor; }
-    const QStringMap &lyrics() const { return mLyrics; }
-
-    void setNumber(int number) { mNumber = number; }
-    void setTitle(const QString &title) { mTitle = title; }
-    void setAuthor(const QString &author) { mAuthor = author; }
-    void setLyrics(const QStringMap &lyrics) { mLyrics = lyrics; }
-
-    bool loadFromFile(const QString &filename);
-    bool saveToFile(const QString &filename);
-
-    QString errorString() const { return mError; }
+    virtual QSize sizeHint() const;
 
 private:
 
-    int mNumber;
-    QString mTitle;
-    QString mAuthor;
-    QStringMap mLyrics;
-    QString mError;
+    QSize mSizeHint;
 };
 
-#endif // SONG_H
+#endif // SIZEHINTWIDGET_H

@@ -5,8 +5,12 @@ set(SRC
     mainwindow.h
     mainwindow.cpp
     resource.qrc
+    sizehintwidget.h
+    sizehintwidget.cpp
     song.h
     song.cpp
+    songeditor.h
+    songeditor.cpp
 )
 
 if(WIN32)

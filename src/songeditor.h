@@ -22,51 +22,45 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef SONG_H
-#define SONG_H
+#ifndef SONGEDITOR_H
+#define SONGEDITOR_H
 
-#include <QMap>
-#include <QObject>
+#include <QDialog>
+#include <QLineEdit>
+#include <QListWidget>
+#include <QMenu>
+#include <QSpinBox>
+#include <QTextEdit>
+#include <QWidget>
 
-typedef QMap<QString, QString> QStringMap;
+#include "song.h"
 
 /**
- * @brief An individual song with lyrics.
+ * @brief Dialog for creating / editing songs.
  */
-class Song : public QObject
+class SongEditor : public QDialog
 {
     Q_OBJECT
-    Q_PROPERTY(int number READ number WRITE setNumber)
-    Q_PROPERTY(QString title READ title WRITE setTitle)
-    Q_PROPERTY(QString author READ author WRITE setAuthor)
-    Q_PROPERTY(QStringMap lyrics READ lyrics WRITE setLyrics)
 
 public:
 
-    explicit Song(QObject *parent = nullptr);
+    SongEditor(Song *song, QWidget *parent = nullptr);
 
-    int number() const { return mNumber; }
-    const QString &title() const { return mTitle; }
-    const QString &author() const { return mAuthor; }
-    const QStringMap &lyrics() const { return mLyrics; }
+private slots:
 
-    void setNumber(int number) { mNumber = number; }
-    void setTitle(const QString &title) { mTitle = title; }
-    void setAuthor(const QString &author) { mAuthor = author; }
-    void setLyrics(const QStringMap &lyrics) { mLyrics = lyrics; }
-
-    bool loadFromFile(const QString &filename);
-    bool saveToFile(const QString &filename);
-
-    QString errorString() const { return mError; }
+    void onAccepted();
 
 private:
 
-    int mNumber;
-    QString mTitle;
-    QString mAuthor;
-    QStringMap mLyrics;
-    QString mError;
+    Song *mSong;
+
+    QMenu *mPartMenu;
+
+    QSpinBox *mNumber;
+    QLineEdit *mTitle;
+    QLineEdit *mAuthor;
+    QListWidget *mPartList;
+    QTextEdit *mPartEditor;
 };
 
-#endif // SONG_H
+#endif // SONGEDITOR_H
